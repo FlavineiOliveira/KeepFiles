@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "KeepFiles": {
+      "commandName": "Project",
+      "commandLineArgs": "\"\" \".TXT\" true true"
+    }
+  }
+}
