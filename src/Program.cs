@@ -1,5 +1,4 @@
 ﻿using KeepFiles.Models;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
 
@@ -12,23 +11,20 @@ try
 
     var arguments = Environment.GetCommandLineArgs();
 
-    var parametersCommand = new ParametersCommandLine(arguments);
+    log.AppendLine($"Arguments: {JsonSerializer.Serialize(arguments)}");
 
-    var requiredProperties = parametersCommand
-                            .GetType()
-                            .GetProperties()
-                            .Where(p => p.CustomAttributes.Any(a => a.AttributeType == typeof(RequiredAttribute)));
-
-    if (requiredProperties.Count() > arguments.Length)
+    if ((arguments.Length - 1) != typeof(ParametersCommandLine).GetProperties().Length)
     {
-        log.AppendLine("Required arguments not informed!");
+        log.AppendLine("Arguments incorrects!");
         return;
     }
+
+    var parametersCommand = new ParametersCommandLine(arguments);
 
     if (string.IsNullOrEmpty(parametersCommand.Path))
         parametersCommand.UpdatePath(Directory.GetCurrentDirectory());
 
-    log.AppendLine($"Arguments: {JsonSerializer.Serialize(parametersCommand)}");
+    log.AppendLine($"Arguments to process: {JsonSerializer.Serialize(parametersCommand)}");
 
     var files = Directory.GetFiles(parametersCommand.Path, "*", SearchOption.AllDirectories)
                          .Where(file =>
@@ -57,7 +53,7 @@ try
 
     foreach (var folder in folders)
     {
-        if (Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Count() == 0)
+        if (Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Length == 0)
         {
             Directory.Delete(folder, true);
             log.AppendLine($"Deleted folder: {folder}");
